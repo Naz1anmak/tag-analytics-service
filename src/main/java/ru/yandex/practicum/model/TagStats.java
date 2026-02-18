@@ -16,7 +16,5 @@ public class TagStats {
     @Id
     private UUID tagId;
 
-    private long usageCount;
-
-    private OffsetDateTime lastUsedAt;
+    private OffsetDateTime createdAt;
 }

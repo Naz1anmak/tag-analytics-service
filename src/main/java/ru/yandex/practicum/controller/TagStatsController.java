@@ -17,7 +17,7 @@ public class TagStatsController {
     @PostMapping("/{id}/used")
     @ResponseStatus(HttpStatus.CREATED)
     public TagStatsDto incrementUsage(@PathVariable UUID id) {
-        return tagStatsService.incrementUsage(id);
+        return tagStatsService.createIfAbsent(id);
     }
 
     @GetMapping("/{id}/stats")

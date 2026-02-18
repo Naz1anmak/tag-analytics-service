@@ -18,33 +18,34 @@ import java.util.UUID;
 public class TagStatsService {
     private final TagStatsRepository tagStatsRepository;
     private final TagStatsMapper tagStatsMapper;
+    private final TagStatsReadService tagStatsReadService;
 
     @Transactional
-    public TagStatsDto incrementUsage(UUID id) {
+    public TagStatsDto createIfAbsent(UUID id) {
         OffsetDateTime now = OffsetDateTime.now();
-        return tagStatsRepository.findById(id)
+
+        return tagStatsReadService.getTagStatsById(id)
                 .map(tagStats -> {
-                    tagStats.setUsageCount(tagStats.getUsageCount() + 1);
-                    tagStats.setLastUsedAt(now);
-                    log.info("Статистика тега обновлена {}", tagStats);
-                    return tagStatsMapper.toDto(tagStatsRepository.save(tagStats));
+                    log.info("Тег с id={} уже добавлен", id);
+                    return tagStatsMapper.toDto(tagStats);
                 })
                 .orElseGet(() -> {
                     TagStats newTagStats = new TagStats();
                     newTagStats.setTagId(id);
-                    newTagStats.setUsageCount(1);
-                    newTagStats.setLastUsedAt(now);
-                    log.info("Новый тег добавлен в статистику {}", newTagStats);
-                    return tagStatsMapper.toDto(tagStatsRepository.save(newTagStats));
+                    newTagStats.setCreatedAt(now);
+
+                    TagStats savedTagStats = tagStatsRepository.save(newTagStats);
+
+                    log.info("Добавлен тег с id={}", id);
+                    return tagStatsMapper.toDto(savedTagStats);
                 });
     }
 
     @Transactional(readOnly = true)
     public TagStatsDto getTagStats(UUID id) {
-        log.info("Запрошена статистика по теги с id={}", id);
+        log.info("Запрошена информация по тегу с id={}", id);
         return tagStatsRepository.findById(id)
-                .map(tagStats ->
-                        new TagStatsDto(tagStats.getUsageCount(), tagStats.getLastUsedAt()))
-                .orElseGet(() -> new TagStatsDto(0, null));
+                .map(tagStats -> new TagStatsDto(tagStats.getCreatedAt()))
+                .orElseGet(() -> new TagStatsDto(null));
     }
 }

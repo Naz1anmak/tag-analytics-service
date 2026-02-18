@@ -8,9 +8,6 @@ import ru.yandex.practicum.model.TagStats;
 public class TagStatsMapper {
 
     public TagStatsDto toDto(TagStats tagStats) {
-        return new TagStatsDto(
-                tagStats.getUsageCount(),
-                tagStats.getLastUsedAt()
-        );
+        return new TagStatsDto(tagStats.getCreatedAt());
     }
 }

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.dto;
+package ru.practicum.tagAnalytics.dto;
 
 import java.time.OffsetDateTime;
 

@@ -1,8 +1,8 @@
-package ru.yandex.practicum.mapper;
+package ru.practicum.tagAnalytics.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.dto.TagStatsDto;
-import ru.yandex.practicum.model.TagStats;
+import ru.practicum.tagAnalytics.dto.TagStatsDto;
+import ru.practicum.tagAnalytics.model.TagStats;
 
 @Component
 public class TagStatsMapper {

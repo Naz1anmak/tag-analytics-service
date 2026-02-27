@@ -1,11 +1,13 @@
-package ru.yandex.practicum.controller;
+package ru.practicum.tagAnalytics.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.dto.TagStatsDto;
-import ru.yandex.practicum.service.TagStatsService;
+import ru.practicum.tagAnalytics.dto.TagStatsDto;
+import ru.practicum.tagAnalytics.service.TagStatsService;
 
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -23,5 +25,10 @@ public class TagStatsController {
     @GetMapping("/{id}/stats")
     public TagStatsDto getTagStats(@PathVariable UUID id) {
         return tagStatsService.getTagStats(id);
+    }
+
+    @PostMapping("/stats")
+    public Map<UUID, TagStatsDto> getTagStatsBatch(@RequestBody Set<UUID> tagIds) {
+        return tagStatsService.getTagStatsBatch(tagIds);
     }
 }

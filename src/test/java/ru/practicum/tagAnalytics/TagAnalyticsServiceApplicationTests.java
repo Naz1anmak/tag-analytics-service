@@ -1,4 +1,4 @@
-package ru.yandex.practicum;
+package ru.practicum.tagAnalytics;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

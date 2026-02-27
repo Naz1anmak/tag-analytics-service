@@ -1,4 +1,4 @@
-package ru.yandex.practicum;
+package ru.practicum.tagAnalytics;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

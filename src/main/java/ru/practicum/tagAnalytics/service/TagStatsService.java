@@ -12,4 +12,6 @@ public interface TagStatsService {
     TagStatsDto getTagStats(UUID id);
 
     Map<UUID, TagStatsDto> getTagStatsBatch(Set<UUID> tagIds);
+
+    void deleteTagAnalytics(UUID id);
 }

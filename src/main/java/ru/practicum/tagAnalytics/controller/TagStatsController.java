@@ -18,7 +18,7 @@ public class TagStatsController {
 
     @PostMapping("/{id}/used")
     @ResponseStatus(HttpStatus.CREATED)
-    public TagStatsDto incrementUsage(@PathVariable UUID id) {
+    public TagStatsDto createIfAbsent(@PathVariable UUID id) {
         return tagStatsService.createIfAbsent(id);
     }
 
@@ -30,5 +30,11 @@ public class TagStatsController {
     @PostMapping("/stats")
     public Map<UUID, TagStatsDto> getTagStatsBatch(@RequestBody Set<UUID> tagIds) {
         return tagStatsService.getTagStatsBatch(tagIds);
+    }
+
+    @DeleteMapping("/{id}/used")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTagAnalytics(@PathVariable UUID id) {
+        tagStatsService.deleteTagAnalytics(id);
     }
 }

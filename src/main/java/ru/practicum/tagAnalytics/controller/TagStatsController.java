@@ -16,10 +16,15 @@ import java.util.UUID;
 public class TagStatsController {
     private final TagStatsService tagStatsService;
 
-    @PostMapping("/{id}/used")
+    @PostMapping("/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public TagStatsDto createIfAbsent(@PathVariable UUID id) {
-        return tagStatsService.createIfAbsent(id);
+    public TagStatsDto create(@PathVariable UUID id) {
+        return tagStatsService.create(id);
+    }
+
+    @PatchMapping("/{id}/used")
+    public TagStatsDto incrementUsage(@PathVariable UUID id) {
+        return tagStatsService.incrementUsage(id);
     }
 
     @GetMapping("/{id}/stats")

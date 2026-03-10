@@ -1,5 +1,6 @@
 package ru.practicum.tagAnalytics.service.impl;
 
+import exception.ConflictException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +10,6 @@ import ru.practicum.tagAnalytics.model.TagStats;
 import ru.practicum.tagAnalytics.repository.TagStatsRepository;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -21,11 +21,6 @@ public class TagStatsReadService {
     private final TagStatsRepository tagStatsRepository;
 
     @Transactional(readOnly = true)
-    public Optional<TagStats> findTagStatsByTagId(UUID id) {
-        return tagStatsRepository.findById(id);
-    }
-
-    @Transactional(readOnly = true)
     public TagStats getTagStatsByTagId(UUID tagId) {
         return tagStatsRepository.findById(tagId).orElseThrow(() -> {
             log.error("Статистика по тегу с id={} не найдена", tagId);
@@ -34,8 +29,16 @@ public class TagStatsReadService {
     }
 
     @Transactional(readOnly = true)
-    public Map<UUID, TagStats> findTagStatsByTagIds(Set<UUID> tagIds) {
+    public Map<UUID, TagStats> getTagStatsByTagIds(Set<UUID> tagIds) {
         return tagStatsRepository.findAllByTagIdIn(tagIds).stream()
                 .collect(Collectors.toMap(TagStats::getTagId, tagStats -> tagStats));
+    }
+
+    @Transactional(readOnly = true)
+    public void assertTagStatsNotExists(UUID tagId) {
+        if (tagStatsRepository.existsByTagId(tagId)) {
+            log.warn("Статистика по тегу с id={} уже существует", tagId);
+            throw new ConflictException("Статистика по тегу с id=" + tagId + " уже существует");
+        }
     }
 }

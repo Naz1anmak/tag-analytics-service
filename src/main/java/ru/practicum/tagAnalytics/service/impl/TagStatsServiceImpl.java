@@ -10,8 +10,6 @@ import ru.practicum.tagAnalytics.model.TagStats;
 import ru.practicum.tagAnalytics.repository.TagStatsRepository;
 import ru.practicum.tagAnalytics.service.TagStatsService;
 
-import java.time.OffsetDateTime;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -27,20 +25,24 @@ public class TagStatsServiceImpl implements TagStatsService {
 
     @Override
     @Transactional
-    public TagStatsDto createIfAbsent(UUID id) {
-        OffsetDateTime now = OffsetDateTime.now();
+    public TagStatsDto create(UUID id) {
+        tagStatsReadService.assertTagStatsNotExists(id);
+        TagStats tagStats = tagStatsMapper.fromCreateDto(id);
 
-        return tagStatsReadService.findTagStatsByTagId(id)
-                .map(tagStats -> {
-                    log.info("Тег с id={} уже добавлен", id);
-                    return tagStatsMapper.toDto(tagStats);
-                })
-                .orElseGet(() -> {
-                    TagStats savedTagStats = getSavedTagStats(id, now);
+        TagStats savedTagStats = tagStatsRepository.save(tagStats);
+        log.info("Создана статистика для тега с id={}", id);
+        return tagStatsMapper.toDto(savedTagStats);
+    }
 
-                    log.info("Добавлен тег с id={}", id);
-                    return tagStatsMapper.toDto(savedTagStats);
-                });
+    @Override
+    @Transactional
+    public TagStatsDto incrementUsage(UUID id) {
+        TagStats tagStats = tagStatsReadService.getTagStatsByTagId(id);
+
+        tagStats.setUsageCount(tagStats.getUsageCount() + 1);
+        TagStats saved = tagStatsRepository.save(tagStats);
+        log.info("Обновлён счётчик использования для тега с id={}, usageCount={}", id, saved.getUsageCount());
+        return tagStatsMapper.toDto(saved);
     }
 
     @Override
@@ -54,17 +56,7 @@ public class TagStatsServiceImpl implements TagStatsService {
     @Override
     @Transactional
     public Map<UUID, TagStatsDto> getTagStatsBatch(Set<UUID> tagIds) {
-        Map<UUID, TagStats> tagStatsByTagIds = tagStatsReadService.findTagStatsByTagIds(tagIds);
-
-        //Заглушка, потому что в главном сервисе теги не всегда добавляются до запроса
-        if (tagStatsByTagIds.size() < tagIds.size()) {
-            Set<UUID> missingTagIds = new HashSet<>(tagIds);
-            missingTagIds.removeAll(tagStatsByTagIds.keySet());
-            log.info("Статистика по тегам с id={} не найдена", missingTagIds);
-
-            OffsetDateTime now = OffsetDateTime.now();
-            missingTagIds.forEach(id -> tagStatsByTagIds.put(id, getSavedTagStats(id, now)));
-        }
+        Map<UUID, TagStats> tagStatsByTagIds = tagStatsReadService.getTagStatsByTagIds(tagIds);
 
         log.info("Получена информация по тегам с id={}", tagIds);
         return tagStatsByTagIds.entrySet().stream()
@@ -80,14 +72,5 @@ public class TagStatsServiceImpl implements TagStatsService {
         TagStats tagStats = tagStatsReadService.getTagStatsByTagId(id);
         tagStatsRepository.delete(tagStats);
         log.info("Удалена статистика по тегу с id={}", id);
-    }
-
-    @Transactional
-    public TagStats getSavedTagStats(UUID id, OffsetDateTime now) {
-        TagStats newTagStats = new TagStats();
-        newTagStats.setTagId(id);
-        newTagStats.setCreatedAt(now);
-
-        return tagStatsRepository.save(newTagStats);
     }
 }

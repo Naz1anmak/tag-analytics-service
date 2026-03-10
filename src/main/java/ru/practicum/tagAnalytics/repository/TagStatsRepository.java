@@ -9,4 +9,6 @@ import java.util.UUID;
 
 public interface TagStatsRepository extends JpaRepository<TagStats, UUID> {
     List<TagStats> findAllByTagIdIn(Set<UUID> tagIds);
+
+    boolean existsByTagId(UUID tagId);
 }

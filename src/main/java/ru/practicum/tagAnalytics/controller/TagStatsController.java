@@ -18,13 +18,8 @@ public class TagStatsController {
 
     @PostMapping("/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public TagStatsDto create(@PathVariable UUID id) {
-        return tagStatsService.create(id);
-    }
-
-    @PatchMapping("/{id}/used")
-    public TagStatsDto incrementUsage(@PathVariable UUID id) {
-        return tagStatsService.incrementUsage(id);
+    public TagStatsDto createTagAnalytics(@PathVariable UUID id) {
+        return tagStatsService.createTagAnalytics(id);
     }
 
     @GetMapping("/{id}/stats")
@@ -37,7 +32,7 @@ public class TagStatsController {
         return tagStatsService.getTagStatsBatch(tagIds);
     }
 
-    @DeleteMapping("/{id}/used")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTagAnalytics(@PathVariable UUID id) {
         tagStatsService.deleteTagAnalytics(id);

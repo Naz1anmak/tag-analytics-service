@@ -1,8 +1,7 @@
 package ru.practicum.tagAnalytics.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -17,15 +16,23 @@ import java.util.UUID;
 public class TagStats {
 
     @Id
-    @Column(name = "tag_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @Version
+    @JsonIgnore
+    private Long version;
+
+    @Column(name = "tag_id", nullable = false, unique = true)
     private UUID tagId;
 
     @Column(name = "usage_count", nullable = false)
     private long usageCount = 0;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
+
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;

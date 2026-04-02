@@ -7,9 +7,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface TagStatsService {
-    TagStatsDto create(UUID id);
-
-    TagStatsDto incrementUsage(UUID id);
+    TagStatsDto createTagAnalytics(UUID id);
 
     TagStatsDto getTagStats(UUID id);
 

@@ -25,24 +25,13 @@ public class TagStatsServiceImpl implements TagStatsService {
 
     @Override
     @Transactional
-    public TagStatsDto create(UUID id) {
+    public TagStatsDto createTagAnalytics(UUID id) {
         tagStatsReadService.assertTagStatsNotExists(id);
         TagStats tagStats = tagStatsMapper.fromCreateDto(id);
 
         TagStats savedTagStats = tagStatsRepository.save(tagStats);
         log.info("Создана статистика для тега с id={}", id);
         return tagStatsMapper.toDto(savedTagStats);
-    }
-
-    @Override
-    @Transactional
-    public TagStatsDto incrementUsage(UUID id) {
-        TagStats tagStats = tagStatsReadService.getTagStatsByTagId(id);
-
-        tagStats.setUsageCount(tagStats.getUsageCount() + 1);
-        TagStats saved = tagStatsRepository.save(tagStats);
-        log.info("Обновлён счётчик использования для тега с id={}, usageCount={}", id, saved.getUsageCount());
-        return tagStatsMapper.toDto(saved);
     }
 
     @Override
